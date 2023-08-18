@@ -31,6 +31,9 @@ import java.util.List;
 import java.util.Objects;
 
 import com.google.common.base.Preconditions;
+
+import net.fabricmc.loom.util.download.DownloadBuilder;
+
 import org.gradle.api.Project;
 import org.gradle.api.logging.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -77,16 +80,32 @@ public abstract class MinecraftProvider {
 
 		initFiles();
 
-		metadataProvider = new MinecraftMetadataProvider(
-				MinecraftMetadataProvider.Options.create(
-						minecraftVersion,
-						getProject(),
-						file("minecraft-info.json").toPath()
-				),
-				getExtension()::download
-		);
-
-		downloadJars();
+		if (minecraftVersion.contains("1.18.2-MITE")){
+			MITEMetadataProvider miteProvider = new MITEMetadataProvider(
+					getProject(),
+					minecraftVersion,
+					MinecraftMetadataProvider.Options.create(
+							"1.18.2",
+							getProject(),
+							file("minecraft-info.json").toPath()
+					),
+					getExtension()::download
+			);
+			metadataProvider = miteProvider;
+			getLogger().info(":Copying MITE jars");
+			minecraftServerJar = miteProvider.getMiteSourceFile();
+			minecraftClientJar = miteProvider.getMiteSourceFile();
+		}else{
+			metadataProvider = new MinecraftMetadataProvider(
+					MinecraftMetadataProvider.Options.create(
+							minecraftVersion,
+							getProject(),
+							file("minecraft-info.json").toPath()
+					),
+					getExtension()::download
+			);
+			downloadJars();
+		}
 
 		if (provideServer()) {
 			serverBundleMetadata = BundleMetadata.fromJar(minecraftServerJar.toPath());

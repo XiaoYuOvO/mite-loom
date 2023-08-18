@@ -24,6 +24,8 @@
 
 package net.fabricmc.loom.test.unit.providers
 
+import net.fabricmc.loom.configuration.providers.minecraft.MITEMetadataProvider
+
 import java.nio.file.Files
 import java.nio.file.Path
 
@@ -65,6 +67,13 @@ class MinecraftMetadataProviderTest extends DownloadTest {
 		meta.id() == "1.20.1"
 		meta2.id() == "1.20.1"
 		calls == 1
+	}
+
+	def "MITEVersionTest"(){
+		when:
+		def meta = MITEprovider("1.18.2-MITE-v0.6.5-beta").getVersionMeta()
+		then:
+		meta.id() == "1.18.2-MITE-v0.6.5-beta"
 	}
 
 	// Tests a fix to https://github.com/FabricMC/fabric-loom/issues/886
@@ -149,6 +158,18 @@ class MinecraftMetadataProviderTest extends DownloadTest {
 				options(version, customUrl),
 				Download.&create
 				)
+	}
+
+	private MinecraftMetadataProvider MITEprovider(String version, String customUrl = null) {
+		return new MITEMetadataProvider(
+				getProject(),
+                MinecraftMetadataProvider.Options.create(
+                        version,
+                        getProject(),
+                        file("minecraft-info.json").toPath()
+                ),
+                Download.&create
+        )
 	}
 
 	private MinecraftMetadataProvider.Options options(String version, String customUrl) {

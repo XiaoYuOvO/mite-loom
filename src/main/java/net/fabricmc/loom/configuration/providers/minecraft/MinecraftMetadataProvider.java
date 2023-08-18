@@ -38,7 +38,7 @@ import net.fabricmc.loom.LoomGradlePlugin;
 import net.fabricmc.loom.util.MirrorUtil;
 import net.fabricmc.loom.util.download.DownloadBuilder;
 
-public final class MinecraftMetadataProvider {
+public class MinecraftMetadataProvider {
 	private final Options options;
 	private final Function<String, DownloadBuilder> download;
 
@@ -97,11 +97,11 @@ public final class MinecraftMetadataProvider {
 		throw new RuntimeException("Failed to find minecraft version: " + options.minecraftVersion());
 	}
 
-	private ManifestVersion getVersions(boolean forceDownload) throws IOException {
+	ManifestVersion getVersions(boolean forceDownload) throws IOException {
 		return getVersions(options.versionManifestUrl(), options.versionManifestPath(), forceDownload);
 	}
 
-	private ManifestVersion getExperimentalVersions(boolean forceDownload) throws IOException {
+	ManifestVersion getExperimentalVersions(boolean forceDownload) throws IOException {
 		return getVersions(options.experimentalVersionManifestUrl(), options.experimentalVersionManifestPath(), forceDownload);
 	}
 
@@ -155,7 +155,7 @@ public final class MinecraftMetadataProvider {
 	}
 
 	@FunctionalInterface
-	private interface ManifestVersionSupplier {
+	interface ManifestVersionSupplier {
 		ManifestVersion get() throws IOException;
 	}
 }
